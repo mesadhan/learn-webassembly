@@ -1,0 +1,14 @@
+{
+  "name": "webassembly-node-server",
+  "version": "1.0.0",
+  "description": "Demo Webassembly Node Server",
+  "main": "server.js",
+  "author": "mesadhan",
+  "license": "MIT",
+  "scripts":{
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

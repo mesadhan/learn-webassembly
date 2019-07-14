@@ -1,0 +1,22 @@
+<h1>Hello! From Webassembly</h1>
+<pre id="setResult">
+
+</pre>
+
+<script>
+WebAssembly.instantiateStreaming(fetch('program.wasm'))
+.then(results => {
+  console.log('WASM Ready');
+
+
+  // Make the wasm object accessible
+  window.wasm = results;
+  console.log(results);
+  console.log(WebAssembly.Module.exports(results.module));
+
+
+  let modules = WebAssembly.Module.exports(results.module);
+  window.document.getElementById("setResult").innerText = JSON.stringify(modules);
+});
+
+</script>
