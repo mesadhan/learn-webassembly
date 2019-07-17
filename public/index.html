@@ -4,19 +4,29 @@
 </pre>
 
 <script>
-WebAssembly.instantiateStreaming(fetch('program.wasm'))
-.then(results => {
-  console.log('WASM Ready');
+    WebAssembly.instantiateStreaming(fetch('program.wasm'))
+        .then(results => {
+            console.log('WASM Loaded................');
 
 
-  // Make the wasm object accessible
-  window.wasm = results;
-  console.log(results);
-  console.log(WebAssembly.Module.exports(results.module));
+            // just make it global and understand wasm binary
+            window.wasm = results;
+            console.log('Data is loaded to window object', results);
 
 
-  let modules = WebAssembly.Module.exports(results.module);
-  window.document.getElementById("setResult").innerText = JSON.stringify(modules);
-});
+            // Now, Keep closer look at WASM file
+            let modules =  WebAssembly.Module.exports(results.module);
+            console.log('WASM modules', modules);
+            document.getElementById("setResult").innerText = JSON.stringify(modules);
+
+
+            // exports wasm methods
+            let exports = results.instance.exports;
+            exports.setNumber(120);
+            let number = exports.getNumber();
+            console.log(number);
+
+
+        });
 
 </script>
