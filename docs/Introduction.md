@@ -42,7 +42,7 @@ log(exports.getNumber());              // get value
 References:
 [https://developer.mozilla.org/en-US/docs/WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly)
 
-# Lesson 01
+# Lesson 01 - Basic 
 
 First Need to load `wasm` file
 
@@ -61,4 +61,24 @@ First Need to load `wasm` file
 
 </script>
 
+```
+
+# Lesson 02 - Export 
+
+```html
+
+<h1>Hello! From Webassembly</h1>
+<script>
+    WebAssembly.instantiateStreaming(fetch('program.wasm'))         // here load your WebAssembly Binary
+        .then(results => {
+
+            // exports wasm methods
+            let exports = results.instance.exports;
+            exports.setNumber(120);                         // calling method to set value
+            let number = exports.getNumber();               // get the value by calling binary .wasm file method
+            console.log(number);
+
+        });
+
+</script>
 ```
