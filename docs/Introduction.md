@@ -1,8 +1,10 @@
 # Setup Environment
 
+```
 1). First Visit [WasmFiddle](https://wasdk.github.io/WasmFiddle)
 2). Need to familiar with C or C++ syntax, we already know webassembly can be compile from different languages. But here we are practicing only C and C++.
 3). Now write simple C code like below, in left `C Code Panel`
+```
 
 ```c
 int number = 0;
