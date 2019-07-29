@@ -16,11 +16,20 @@
 
             // just make it global and understand wasm binary
             window.wasm = results;
-            results.instance.exports.importMethodTest(40);      // import -> js method call by c WASM
 
+
+            // import
+            results.instance.exports.importMethodTest(40);
+
+
+            // Export
             results.instance.exports.setNumber(30);
             let value = results.instance.exports.getNumber();
             console.log('message', value);
+
+
+            console.log('All the Import Methods: ', WebAssembly.Module.imports(results.module));         // fetch all the import method
+            console.log('All the Exports Methods: ', WebAssembly.Module.exports(results.module));         // fetch all the import method
         });
 
 </script>
