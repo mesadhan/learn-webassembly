@@ -4,31 +4,23 @@
 </pre>
 
 <script>
-    WebAssembly.instantiateStreaming(fetch('program.wasm'))
+    const imports = {
+        env: {
+            consoleLogMessage: console.log
+        }
+    };
+    WebAssembly.instantiateStreaming(fetch('program.wasm'), imports)
         .then(results => {
             console.log('WASM Loaded................');
 
 
             // just make it global and understand wasm binary
             window.wasm = results;
-            console.log('Data is loaded to window object', results);
+            results.instance.exports.importMethodTest(40);      // import -> js method call by c WASM
 
-
-            // Now, Keep closer look at WASM file
-            let modules =  WebAssembly.Module.exports(results.module);
-            console.log('WASM modules', modules);
-            document.getElementById("setResult").innerText = JSON.stringify(modules);
-
-
-            // exports wasm methods
-            let exports = results.instance.exports;
-            exports.setNumber(120);
-            let number = exports.getNumber();
-            console.log(number);
-
-            alert('Number is: '+ number)
-
-
+            results.instance.exports.setNumber(30);
+            let value = results.instance.exports.getNumber();
+            console.log('message', value);
         });
 
 </script>

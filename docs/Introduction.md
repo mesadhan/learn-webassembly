@@ -63,7 +63,7 @@ First Need to load `wasm` file
 
 ```
 
-# Lesson 02 - Export 
+# Lesson 02 - Export (JS Call Our WASM methods)
 
 ```html
 
@@ -80,5 +80,52 @@ First Need to load `wasm` file
 
         });
 
+</script>
+```
+
+# Lesson 03 - Import (Opposite, WASM Call Our JS methods)
+
+`Step 1:` Create new C program, download `program.wasm` file and updated previous one.
+
+```c
+int number = 0;
+void consoleLogMessage(int n);
+int main() { 
+  return 200;
+}
+int getNumber() {
+  return number;
+}
+void setNumber(n) {
+  number = n;
+}
+int importMethodTest(int n){
+  consoleLogMessage(n);
+}
+```
+
+`Step 2:` update your `.index.html` file
+
+```html
+<h1>Hello! From Webassembly</h1>
+<script>
+    // this import reference to `program.wasm`
+    const imports = {
+        env: {
+            consoleLogMessage: console.log
+        }
+    };
+    WebAssembly.instantiateStreaming(fetch('program.wasm'), imports)
+        .then(results => {
+            console.log('WASM Loaded................');
+           
+            // import -> JS method call by C-WASM
+            results.instance.exports.importMethodTest(40);      // import -> 
+    
+            // export -> C-WASM method call by JS
+            results.instance.exports.setNumber(30);
+            let value = results.instance.exports.getNumber();
+            console.log('message', value);
+        });
 </script>
 ```
