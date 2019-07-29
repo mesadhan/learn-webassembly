@@ -120,12 +120,47 @@ int importMethodTest(int n){
             console.log('WASM Loaded................');
            
             // import -> JS method call by C-WASM
-            results.instance.exports.importMethodTest(40);      // import -> 
+            results.instance.exports.importMethodTest(40);
     
             // export -> C-WASM method call by JS
             results.instance.exports.setNumber(30);
             let value = results.instance.exports.getNumber();
             console.log('message', value);
         });
+</script>
+```
+
+# Lesson: 04 - Export & Import Overview
+
+```html
+<script>
+    const imports = {
+        env: {
+            consoleLogMessage: console.log
+        }
+    };
+    WebAssembly.instantiateStreaming(fetch('program.wasm'), imports)
+        .then(results => {
+            console.log('WASM Loaded................');
+
+
+            // just make it global and understand wasm binary
+            window.wasm = results;
+
+
+            // import
+            results.instance.exports.importMethodTest(40);
+
+
+            // Export
+            results.instance.exports.setNumber(30);
+            let value = results.instance.exports.getNumber();
+            console.log('message', value);
+
+
+            console.log('All the Imports Methods: ', WebAssembly.Module.imports(results.module));         // fetch all the `Import` method
+            console.log('All the Exports Methods: ', WebAssembly.Module.exports(results.module));         // fetch all the `Export` method
+        });
+
 </script>
 ```
