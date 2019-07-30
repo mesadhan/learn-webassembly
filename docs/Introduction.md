@@ -164,3 +164,61 @@ int importMethodTest(int n){
 
 </script>
 ```
+
+# Lesson 05: Memory & String
+
+Create new `program.wasm` file, and updated 
+
+```
+#include <string.h>
+
+void numberLog(int n);
+void stringLog(char *offset, int length);
+
+int main() { 
+  return 200;
+}
+
+void getNumber(n) {
+  numberLog(n);
+}
+
+int messageLog(int n){
+  char * msg = "Hello! From C Code"; 
+  stringLog(msg, strlen(msg));
+}
+```
+> Updated Script File
+
+```html
+<script>
+    // Read data from webassembly memory ArrayBuffer
+    const readMemoryStringFromBuffer = (offset, length) => {
+        let memoryBuffer = wasm.instance.exports.memory.buffer;
+
+        const strBuffer = new Uint8Array(memoryBuffer, offset, length);
+        const string = new TextDecoder().decode(strBuffer);
+        console.log('message', string);
+    };
+
+    const imports = {
+        env: {
+            numberLog: console.log,
+            stringLog: readMemoryStringFromBuffer
+        }
+    };
+
+    WebAssembly.instantiateStreaming(fetch('program.wasm'), imports).then(results => {
+
+        // make it global
+        window.wasm = results;
+
+        console.log('WASM Loaded................');
+
+
+        console.log('All Import Methods:- ', WebAssembly.Module.imports(results.module));
+        results.instance.exports.getNumber(33);
+        results.instance.exports.messageLog();
+    });
+</script>
+```
