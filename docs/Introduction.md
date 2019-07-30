@@ -265,3 +265,117 @@ int messageLog(int n){
 
 </script>
 ```
+
+# Lesson 07 - Webassembly Dynmaic Custom Memory Import
+
+> Go to [WasmFiddle](https://wasdk.github.io/WasmFiddle/)
+
+```c
+
+#include <string.h>
+
+void numberLog(int n);
+void stringLog(char *offset, int length);
+
+int main() { 
+  return 200;
+}
+
+void getNumber(n) {
+  numberLog(n);
+}
+
+int messageLog(int n){
+  char * msg = "Hello! From C Code"; 
+  stringLog(msg, strlen(msg));
+}
+
+```
+
+Note: Build Raw/Plain `Wat file` and `copy it`
+Now go to [Webassembly Studio](https://webassembly.studio/)
+
+> open `main.wat` file and `paste` plain wat
+
+```wat
+(module
+ (type $FUNCSIG$vi (func (param i32)))
+ (type $FUNCSIG$vii (func (param i32 i32)))
+ (import "env" "numberLog" (func $numberLog (param i32)))
+ (import "env" "stringLog" (func $stringLog (param i32 i32)))
+ (import "env" "memory" (memory $0 1))
+ (table 0 anyfunc)
+ (data (i32.const 16) "Hello! From C Code\00")
+ (export "memory" (memory $0))
+ (export "main" (func $main))
+ (export "getNumber" (func $getNumber))
+ (export "messageLog" (func $messageLog))
+ (func $main (; 2 ;) (result i32)
+  (i32.const 200)
+ )
+ (func $getNumber (; 3 ;) (param $0 i32)
+  (call $numberLog
+   (get_local $0)
+  )
+ )
+ (func $messageLog (; 4 ;) (param $0 i32) (result i32)
+  (local $1 i32)
+  (call $stringLog
+   (i32.const 16)
+   (i32.const 18)
+  )
+  (get_local $1)
+ )
+)
+```
+
+Change import memory declaration, then `Save` that file.
+Now, From Out Download `main.wasm` file,
+
+> Finally updated `.html` file
+
+```html
+<script>
+
+    // Initialise wasm with custom memory (array buffer)
+    // 2 pages: 2 * 64kb (128kb)
+    const wasmMemory = new WebAssembly.Memory({ initial: 2 });
+
+
+    // Read data from webassembly memory ArrayBuffer
+    const readMemoryStringFromBuffer = (offset, length) => {
+        let memoryBuffer = wasmMemory.buffer;
+
+        const strBuffer = new Uint8Array(memoryBuffer, offset, length);
+        const string = new TextDecoder().decode(strBuffer);
+
+        // Make notify and make use of that string throw event
+        window.dispatchEvent(new CustomEvent('wasmValue', {detail: string}));
+    };
+    window.addEventListener('wasmValue', result => {
+        console.log('Receive String From C:- ', result.detail);
+    });
+
+    const imports = {
+        env: {
+            numberLog: console.log,
+            stringLog: readMemoryStringFromBuffer,
+            memory: wasmMemory,                     // dynamically initialize memory
+        }
+    };
+
+    WebAssembly.instantiateStreaming(fetch('/main.wasm'), imports).then(results => {
+
+        // make it global
+        window.wasm = results;
+        console.log('WASM Loaded................');
+
+
+        console.log('All Import Methods:- ', WebAssembly.Module.imports(results.module));
+        results.instance.exports.getNumber(33);
+        results.instance.exports.messageLog();
+    });
+
+</script>
+```
+ 
