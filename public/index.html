@@ -11,8 +11,13 @@
 
         const strBuffer = new Uint8Array(memoryBuffer, offset, length);
         const string = new TextDecoder().decode(strBuffer);
-        console.log('message', string);
+
+        // Make notify and make use of that string throw event
+        window.dispatchEvent(new CustomEvent('wasmValue', {detail: string}));
     };
+    window.addEventListener('wasmValue', result => {
+       console.log('Receive String From C:- ', result.detail);
+    });
 
     const imports = {
         env: {
